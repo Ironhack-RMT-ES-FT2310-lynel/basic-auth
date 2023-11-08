@@ -138,12 +138,13 @@ router.post("/login", async (req, res, next) => {
     //    esto nosotros le damos cualquier nombre
     //           |
     req.session.user = sessionInfo
+    // ! req.session es algo que vamos a tener acceso en CUALQUIER ruta de i servidor
 
     req.session.save(() => {
       // despues de registrar correctamente la sesion, que quieres hacer?
 
       // si todo sale bien
-      res.redirect("/") // ! alguna pagina privada
+      res.redirect("/profile") // ! alguna pagina privada
     })
   
   } catch (err) {
