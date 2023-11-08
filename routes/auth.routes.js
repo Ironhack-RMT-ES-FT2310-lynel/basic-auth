@@ -22,7 +22,7 @@ router.post("/signup", async (req, res, next) => {
   if ( username === "" || email === "" || password === "" ) {
     console.log("al menos uno de los campos está vacio")
     // 1. queremos indicarle al usuario que hubo fallo de frontend
-    res.render("auth/signup.hbs", {
+    res.status(400).render("auth/signup.hbs", {
       errorMessage: "Todos los campos deben estar llenos"
     })
 
@@ -34,7 +34,7 @@ router.post("/signup", async (req, res, next) => {
   const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm
   // const passwordRegex = new RegExp("/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm")
   if (passwordRegex.test(password) === false) {
-    res.render("auth/signup.hbs", {
+    res.status(400).render("auth/signup.hbs", {
       errorMessage: "Contraseña no es suficiente segura. Debe tener 8 caracteres, al menos una mayuscula, una minuscula y un numero."
     })
     return; // detener la ruta
@@ -49,7 +49,7 @@ router.post("/signup", async (req, res, next) => {
     // si foundUserWithSameEmail es null, no hariamos nada
     // si foundUserWithSameEmail es algo, entonces enviamos error
     if (foundUserWithSameEmail !== null) {
-      res.render("auth/signup.hbs", {
+      res.status(400).render("auth/signup.hbs", {
         errorMessage: "Correo electronico ya registrado"
       })
       return; // detener la ruta
@@ -81,9 +81,61 @@ router.post("/signup", async (req, res, next) => {
 
 
 // GET "/auth/login" => renderizar el formulario de acceso
+router.get("/login", (req, res, next) => {
+
+  res.render("auth/login.hbs")
+
+})
 
 
 // POST "/auth/login" => recibir las credenciales del usuario, validarlo/autenticarlo y crear una sesión activa del usuario
+router.post("/login", async (req, res, next) => {
+
+  console.log(req.body)
+  const { email, password } = req.body
+
+  // validar que los campos esten llenos
+  if (email === "" || password === "") {
+    res.status(400).render("auth/login.hbs", {
+      errorMessage: "Todos los campos deben estar llenos",
+      email, // ejemplo de enviar los valores de campos antes de tener el error
+      password  // ejemplo de enviar los valores de campos antes de tener el error
+    })
+    return // esto detiene la ruta/funcion
+  }
+
+  try {
+    // validar que el usuario exista
+    const foundUser = await User.findOne( { email } )
+    if (foundUser === null) {
+      res.status(400).render("auth/login.hbs", {
+        errorMessage: "Usuario no registrado",
+      })
+      return // esto detiene la ruta/funcion
+    }
+    
+    // validar que la contraseña sea la correcto
+    console.log(foundUser)
+    const isPasswordValid = await bcrypt.compare(password, foundUser.password)
+    console.log("isPasswordValid", isPasswordValid)
+    if (isPasswordValid === false) {
+      res.status(400).render("auth/login.hbs", {
+        errorMessage: "Contraseña no valida",
+      })
+      return // esto detiene la ruta/funcion
+    }
+  
+  
+    // usuario validado. Todo bien.
+    // crear un sesion activa del usuario para que pueda navegar como activo en la pagina
+  
+  
+    // si todo sale bien
+    res.redirect("/") // ! alguna pagina privada
+  } catch (err) {
+    next(err)
+  }
+})
 
 
 
