@@ -1,4 +1,5 @@
 const express = require('express');
+const User = require('../models/User.model');
 const router = express.Router();
 
 // GET "/auth/signup" => renderizar formulario de registro
@@ -38,12 +39,37 @@ router.post("/signup", async (req, res, next) => {
     return; // detener la ruta
   }
 
-  // el correo electronico deba tener el formato correcto
-  // el nombre de usuario o correo electronico no este repetido
+  // el correo electronico deba tener el formato correcto (Esperamos que ustedes la apliquen en los proyectos)
 
 
-  // redireccion de prueba si todo sale bien
-  res.redirect("/")
+  try {
+    // el nombre de usuario o correo electronico no este repetido
+    const foundUserWithSameEmail = await User.findOne( {email} )
+    // si foundUserWithSameEmail es null, no hariamos nada
+    // si foundUserWithSameEmail es algo, entonces enviamos error
+    if (foundUserWithSameEmail !== null) {
+      res.render("auth/signup.hbs", {
+        errorMessage: "Correo electronico ya registrado"
+      })
+      return; // detener la ruta
+    }
+
+
+
+    // si todo sale bien, creamos al usuario
+
+    await User.create({
+      username,
+      email,
+      password
+    })
+
+    // redireccion de prueba si todo sale bien
+    res.redirect("/")
+
+  } catch(err) {
+    next(err)
+  }
 
 })
 
