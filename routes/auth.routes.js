@@ -1,6 +1,7 @@
 const express = require('express');
 const User = require('../models/User.model');
 const router = express.Router();
+const bcrypt = require('bcryptjs');
 
 // GET "/auth/signup" => renderizar formulario de registro
 router.get("/signup", (req, res, next) => {
@@ -43,7 +44,7 @@ router.post("/signup", async (req, res, next) => {
 
 
   try {
-    // el nombre de usuario o correo electronico no este repetido
+    // el correo electronico no este repetido
     const foundUserWithSameEmail = await User.findOne( {email} )
     // si foundUserWithSameEmail es null, no hariamos nada
     // si foundUserWithSameEmail es algo, entonces enviamos error
@@ -54,14 +55,19 @@ router.post("/signup", async (req, res, next) => {
       return; // detener la ruta
     }
 
+    // el nombre de usuario no este repetido (tarea y para hacer en los proyectos)
 
+
+    // cifrar la contraseña del usuario
+    const salt = await bcrypt.genSalt(12)
+    const hashedPassword = await bcrypt.hash(password, salt)
 
     // si todo sale bien, creamos al usuario
 
     await User.create({
       username,
       email,
-      password
+      password: hashedPassword
     })
 
     // redireccion de prueba si todo sale bien
