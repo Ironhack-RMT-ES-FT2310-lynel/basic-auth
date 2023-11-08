@@ -17,6 +17,13 @@ const favicon = require("serve-favicon");
 // https://www.npmjs.com/package/path
 const path = require("path");
 
+// Paquetes para configuracion de sesiones activas de usuarios
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
+
+const MONGO_URI =
+  process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/basic-auth";
+
 // Middleware configuration
 module.exports = (app) => {
   // In development environment the app logs
@@ -36,4 +43,18 @@ module.exports = (app) => {
 
   // Handles access to the favicon
   app.use(favicon(path.join(__dirname, "..", "public", "images", "favicon.ico")));
+
+  app.use(session({
+    secret: process.env.SESSION_SECRET, // clave secreta que se usa para cifrar las cookies
+    resave: false, // no guarda la sesion si no hay sido modificada
+    saveUninitialized: false, // no guarda sesiones sin data (sin login)
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 * 3 // tiempo de expiracion de cookie en milisegundos (ejemplo de 3 dias)
+    },
+    store: MongoStore.create({
+      mongoUrl: MONGO_URI,
+      ttl: 60 * 60 * 24 * 3 // tiempo de expiracion de sesion en segundos (ejemplo de 3 dias)
+    })
+  }))
+
 };

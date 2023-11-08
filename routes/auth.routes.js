@@ -13,7 +13,7 @@ router.get("/signup", (req, res, next) => {
 
 // POST "/auth/signup" => recibir los datos del usuario y crearlo en la DB
 router.post("/signup", async (req, res, next) => {
-
+  
   console.log(req.body)
 
   const { username, email, password } = req.body
@@ -71,7 +71,7 @@ router.post("/signup", async (req, res, next) => {
     })
 
     // redireccion de prueba si todo sale bien
-    res.redirect("/")
+    res.redirect("/auth/login")
 
   } catch(err) {
     next(err)
@@ -126,15 +126,39 @@ router.post("/login", async (req, res, next) => {
     }
   
   
-    // usuario validado. Todo bien.
+    // usuario validado/autenticado. Todo bien.
     // crear un sesion activa del usuario para que pueda navegar como activo en la pagina
+    
+    // en la sesion deberiamos agregar unicamente informacion del usuario que no cambia.
+    const sessionInfo = {
+      _id: foundUser._id,
+      email: foundUser.email
+    }
+
+    //    esto nosotros le damos cualquier nombre
+    //           |
+    req.session.user = sessionInfo
+
+    req.session.save(() => {
+      // despues de registrar correctamente la sesion, que quieres hacer?
+
+      // si todo sale bien
+      res.redirect("/") // ! alguna pagina privada
+    })
   
-  
-    // si todo sale bien
-    res.redirect("/") // ! alguna pagina privada
   } catch (err) {
     next(err)
   }
+})
+
+// GET "/auth/logout" => cerrar la sesión activa del usuario y redireccionarlo a "/"
+router.get("/logout", (req, res, next) => {
+
+  req.session.destroy(() => {
+    // despues de destruir la sesion, que quieres hacer?
+    res.redirect("/")
+  })
+
 })
 
 
