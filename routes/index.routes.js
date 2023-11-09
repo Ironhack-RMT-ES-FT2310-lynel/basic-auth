@@ -14,7 +14,4 @@ router.use("/profile", profileRouter)
 
 module.exports = router;
 
-
-// cambios en desarollo
-let patata = "variable para pruebas"
-// cambio de una ruta para probar
+// otra funcionalidad completamente nueva
