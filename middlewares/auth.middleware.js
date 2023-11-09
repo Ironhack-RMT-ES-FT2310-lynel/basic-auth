@@ -32,6 +32,8 @@ function updateLocals(req, res, next) {
     res.locals.isSessionActive = true // accesible en hbs
   }
 
+  // ? si quieren ver enlaces de admin o boton en el nav de admin cuando el usuario sea de tipo admin deben crear nuevas propiedades de res.locals
+
   next() // continua normalmente con la ruta
 
 }

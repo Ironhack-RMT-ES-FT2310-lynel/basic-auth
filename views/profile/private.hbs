@@ -2,8 +2,19 @@
 
     <h3>Esta es info de tu perfil privado</h3>
 
-    <p>Tienes 10 euros</p>
+    <p>Correo: {{this.userProfile.email}}</p>
 
-    <p>Tienes dos NFTs</p>
+    <p>Nombre de usuario: {{this.userProfile.username}}</p>
+
+    <img src="{{this.userProfile.profilePic}}" alt="imagen-perfil" width="300px">
+
+    <form action="/profile/upload-picture" method="post" enctype="multipart/form-data">
+
+      <label for="image">Foto de Perfil</label>
+      <input type="file" name="image">
+
+      <button>Subir imagen</button>
+
+    </form>
 
 </div>

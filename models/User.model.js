@@ -24,7 +24,8 @@ const userSchema = new Schema(
       type: String,
       enum: ["user", "admin"],
       default: "user"
-    }
+    },
+    profilePic: String // el URL de cloudinary
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`    
