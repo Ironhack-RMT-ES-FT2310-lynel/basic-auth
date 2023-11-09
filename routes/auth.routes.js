@@ -132,7 +132,8 @@ router.post("/login", async (req, res, next) => {
     // en la sesion deberiamos agregar unicamente informacion del usuario que no cambia.
     const sessionInfo = {
       _id: foundUser._id, // ! el id del usuario
-      email: foundUser.email
+      email: foundUser.email,
+      role: foundUser.role
     }
 
     //    esto nosotros le damos cualquier nombre
